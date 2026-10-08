@@ -466,3 +466,6 @@ if hl.plugin.hyprglass then
         hl.dispatch(hl.dsp.exec_cmd("hyprctl reload"))
     end)
 end
+
+-- For Noctalia Color templates
+require("noctalia").apply_theme()

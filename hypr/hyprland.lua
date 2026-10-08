@@ -25,6 +25,7 @@ local browser     = "helium-browser"
 
 
 hl.on("hyprland.start", function()
+    hl.exec_cmd("noctalia --daemon")
     hl.exec_cmd("/usr/lib/polkit-kde-authentication-agent-1")
     hl.exec_cmd("hyprpm reload -n")
     hl.exec_cmd("gnome-keyring-daemon --start --components=secrets,ssh,pkcs11")
@@ -235,8 +236,15 @@ local mainMod = "SUPER"
 
 -- Overview / shell toggles
 -- hl.bind(mainMod .. " + Escape", hl.plugin.scrolloverview.overview("toggle all"))
--- Caelestia shell removed; SUPER+L / SUPER+D / SUPER+ALT etc. are unbound
--- until a replacement shell is set up.
+-- Noctalia shell (autostarted via `noctalia --daemon` in the AUTOSTART block):
+hl.bind(mainMod .. " + L",       hl.dsp.exec_cmd("noctalia msg session lock"))
+hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd("noctalia msg panel-toggle launcher"), { release = true })
+hl.bind(mainMod .. " + D",       hl.dsp.exec_cmd("noctalia msg panel-toggle control-center"), { release = true })
+hl.bind(mainMod .. " + P",       hl.dsp.exec_cmd("noctalia msg panel-toggle control-center system"), { release = false })
+-- Control-center tabs (was Caelestia dashboard tabs): 1=home 2=media 3=system
+hl.bind(mainMod .. " + ALT + 1", hl.dsp.exec_cmd("noctalia msg panel-toggle control-center home"),   { release = true })
+hl.bind(mainMod .. " + ALT + 2", hl.dsp.exec_cmd("noctalia msg panel-toggle control-center media"),  { release = true })
+hl.bind(mainMod .. " + ALT + 3", hl.dsp.exec_cmd("noctalia msg panel-toggle control-center system"), { release = true })
 
 -- Apps / window management
 hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))
@@ -332,17 +340,21 @@ hl.bind(mainMod .. " + page_down",       hl.dsp.exec_cmd("wpctl set-volume @DEFA
 hl.bind(mainMod .. " + ALT + page_up",   hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"),                 { locked = true, repeating = true })
 hl.bind(mainMod .. " + ALT + page_down", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"),                 { locked = true, repeating = true })
 
--- Screenshot / screen recording
--- (was: caelestia screenshot / caelestia record — unbound, use grim+slurp)
+-- Screenshot (Noctalia)
+hl.bind(mainMod .. " + caps_lock", hl.dsp.exec_cmd("noctalia msg screenshot-region"))
+-- (screen recording: no Noctalia equivalent — unbound)
 
--- Bluetooth / network / settings
+-- Bluetooth / network / settings / shell
 hl.bind(mainMod .. " + B",   hl.dsp.exec_cmd("blueman-manager"))
 hl.bind(mainMod .. " + M",   hl.dsp.exec_cmd("pavucontrol"))
 hl.bind(mainMod .. " + N",   hl.dsp.exec_cmd(terminal .. " --title nmtui -e nmtui"))
+hl.bind(mainMod .. " + X",   hl.dsp.exec_cmd("noctalia msg settings-open"))
+hl.bind(mainMod .. " + TAB", hl.dsp.exec_cmd("noctalia msg panel-toggle wallpaper"))
 
 -- Clipboard / emoji
--- (was: caelestia clipboard / caelestia emoji — unbound)
+hl.bind("CTRL + ALT + V",         hl.dsp.exec_cmd("noctalia msg panel-toggle clipboard"))
 hl.bind("CTRL + ALT + SHIFT + V", hl.dsp.exec_cmd("cliphist wipe"))
+hl.bind(mainMod .. " + period",   hl.dsp.exec_cmd("noctalia msg panel-toggle launcher /emo"))
 
 -- Media keys (requires playerctl)
 hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),       { locked = true })
